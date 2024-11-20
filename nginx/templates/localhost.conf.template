@@ -1,0 +1,54 @@
+server {
+    listen  3334;
+    server_name  localhost;
+
+    charset  utf-8;
+
+    gzip_static  on;
+    gzip_vary  on;
+    gzip_buffers  32  4K;
+    gzip_types  text/plain application/javascript application/x-javascript text/css application/xml text/javascript;
+
+    access_log  /var/log/nginx/localhost.log  main;
+
+    error_page  404  /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page  500 502 503 504  /50x.html;
+
+    location = /health {
+        access_log off;
+        add_header 'Content-Type' 'text/plain';
+        return  200  "OK";
+    }
+
+    location / {
+        root  /usr/share/nginx/html/public;
+        index  index.html;
+        try_files $uri $uri.html $uri/ =404;
+    }
+
+    location ~* \.(html|css|js|json|ico|svg|png|jpg|jpeg|txt)$ {
+        # content location
+        root  /usr/share/nginx/html;
+
+        # exact matches -> reverse clean urls -> folders -> not found
+        try_files $uri $uri.html $uri/ =404;
+
+        # non existent pages
+        error_page 404 /404.html;
+
+        # a folder without index.html raises 403 in this setup
+        error_page 403 /404.html;
+
+        # adjust caching headers
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    #location /api {
+    #    include  snippets/proxy_header.conf;
+    #    proxy_pass  http://server:${API_PORT};
+    #}
+}

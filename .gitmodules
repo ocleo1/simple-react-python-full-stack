@@ -1,0 +1,6 @@
+[submodule "api"]
+	path = api
+	url = git@github.com:ocleo1/simple-python-server.git
+[submodule "web"]
+	path = web
+	url = git@github.com:ocleo1/simple-react.git
